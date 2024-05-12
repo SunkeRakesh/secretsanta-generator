@@ -3,6 +3,9 @@ pipeline {
     
     environment {
         SONAR_URL = "http://13.234.110.177:9000"
+        DOCKER_IMAGE = "yugesh01/secret-santa:latest"
+        // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
+        REGISTRY_CREDENTIALS = credentials('docker-cred')
     }
     stages {
         stage('gitcheckout') {
@@ -29,12 +32,6 @@ pipeline {
         }
     
         stage('Build and Push Docker Image') {
-            environment {
-                DOCKER_IMAGE = "yugesh01/secret-santa:latest"
-                // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
-                REGISTRY_CREDENTIALS = credentials('docker-cred')
-            }
-        
             steps {
                 script {
                     sh ' docker build -t ${DOCKER_IMAGE} .'
@@ -46,19 +43,12 @@ pipeline {
                 
             }
         }
-        stage('Deploy to container') {
-            environment {
-                DOCKER_IMAGE = "yugesh01/secret-santa:latest"
-                // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
-                REGISTRY_CREDENTIALS = credentials('docker-cred')
-            }
-        
+        stage('Deploy to container') {  
             steps {
                 script {
                     sh ' docker run -d --name santa -p 2024:8080 ${DOCKER_IMAGE}'
                     }
-                }
-                
+                }      
             }
         }
     }
