@@ -10,7 +10,7 @@ pipeline {
                 git changelog: false, poll: false, url: 'https://github.com/YugeshKumar01/secretsanta-generator.git'
             }
         }
-        stage('Compile') {
+        stage('Compile Code') {
             steps {
                 sh ' mvn clean compile'
             }
