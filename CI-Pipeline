@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    
+    environment {
+        SONAR_URL = "http://13.234.110.177:9000"
+    }
+    stages {
+        stage('gitcheckout') {
+            steps {
+                git changelog: false, poll: false, url: 'https://github.com/YugeshKumar01/secretsanta-generator.git'
+            }
+        }
+        stage('Compile') {
+            steps {
+                sh ' mvn clean compile'
+            }
+        }
+        stage('Static Code Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube' , variable: 'SONAR_AUTH_TOKEN')]) {
+                sh ' mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                }
+            }
+        }
+        stage('build') {
+            steps {
+                sh ' mvn clean package'
+            }
+        }
+    
+        stage('Build and Push Docker Image') {
+            environment {
+                DOCKER_IMAGE = "yugesh01/secret-santa:latest"
+                // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
+                REGISTRY_CREDENTIALS = credentials('docker-cred')
+            }
+        
+            steps {
+                script {
+                    sh ' docker build -t ${DOCKER_IMAGE} .'
+                    def dockerImage = docker.image("${DOCKER_IMAGE}")
+                    docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                    dockerImage.push()
+                    }
+                }
+                
+            }
+        }
+    }
+}
