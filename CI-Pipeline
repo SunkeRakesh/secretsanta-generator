@@ -46,5 +46,20 @@ pipeline {
                 
             }
         }
+        stage('Deploy to container') {
+            environment {
+                DOCKER_IMAGE = "yugesh01/secret-santa:latest"
+                // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
+                REGISTRY_CREDENTIALS = credentials('docker-cred')
+            }
+        
+            steps {
+                script {
+                    sh ' docker run -d --name santa -p 8080:8080 ${DOCKER_IMAGE}'
+                    }
+                }
+                
+            }
+        }
     }
 }
