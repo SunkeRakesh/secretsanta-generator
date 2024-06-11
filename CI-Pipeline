@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        SONAR_URL = "http://13.234.110.177:9000"
+        SONAR_URL = "http://13.233.89.243:9000"
         DOCKER_IMAGE = "yugesh01/secret-santa:latest"
         // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
         REGISTRY_CREDENTIALS = credentials('docker-cred')
@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Static Code Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube' , variable: 'SONAR_AUTH_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonar' , variable: 'SONAR_AUTH_TOKEN')]) {
                 sh ' mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
                 }
             }
