@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('gitcheckout') {
             steps {
-                git changelog: false, poll: false, url: 'https://github.com/YugeshKumar01/secretsanta-generator.git'
+                git changelog: false, poll: false, url: 'https://github.com/SunkeRakesh/secretsanta-generator.git'
             }
         }
         stage('Compile Code') {
